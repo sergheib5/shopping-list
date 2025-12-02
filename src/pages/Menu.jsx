@@ -120,13 +120,15 @@ const Menu = () => {
                       <div className="col-dinner">{item.dinner || '-'}</div>
                       <div className="col-actions">
                         <button
-                          className="delete-button"
+                          className="cancel-button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteItem(item.id);
                           }}
+                          aria-label="Delete item"
+                          title="Delete item"
                         >
-                          🗑️
+                          ×
                         </button>
                       </div>
                     </div>
@@ -163,13 +165,15 @@ const Menu = () => {
                       <div className="col-prepared">{item.preparedBy || '-'}</div>
                       <div className="col-actions">
                         <button
-                          className="delete-button"
+                          className="cancel-button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteItem(item.id);
                           }}
+                          aria-label="Delete item"
+                          title="Delete item"
                         >
-                          🗑️
+                          ×
                         </button>
                       </div>
                     </div>
@@ -198,13 +202,15 @@ const Menu = () => {
                   <div key={item.id} className="snack-item" onClick={() => handleEditItem(item)}>
                     <span>{item.name || '-'}</span>
                     <button
-                      className="delete-button"
+                      className="cancel-button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteItem(item.id);
                       }}
+                      aria-label="Delete item"
+                      title="Delete item"
                     >
-                      🗑️
+                      ×
                     </button>
                   </div>
                 ))}
@@ -231,13 +237,15 @@ const Menu = () => {
                   <div key={item.id} className="snack-item" onClick={() => handleEditItem(item)}>
                     <span>{item.name || '-'}</span>
                     <button
-                      className="delete-button"
+                      className="cancel-button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteItem(item.id);
                       }}
+                      aria-label="Delete item"
+                      title="Delete item"
                     >
-                      🗑️
+                      ×
                     </button>
                   </div>
                 ))}

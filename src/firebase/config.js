@@ -12,11 +12,42 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "your-app-id"
 };
 
+// Validate Firebase configuration
+const validateConfig = () => {
+  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+  const missingFields = requiredFields.filter(field => {
+    const value = firebaseConfig[field];
+    return !value || value === `your-${field.replace(/([A-Z])/g, '-$1').toLowerCase()}` || value.includes('your-');
+  });
+
+  if (missingFields.length > 0) {
+    console.error('❌ Firebase configuration is missing or incomplete:', missingFields);
+    console.error('Please check your .env file and ensure all VITE_FIREBASE_* variables are set correctly.');
+    return false;
+  }
+  return true;
+};
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+let db;
 
-// Initialize Firestore
-export const db = getFirestore(app);
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  
+  // Validate config in development
+  if (import.meta.env.DEV) {
+    validateConfig();
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Firebase:', error);
+  if (import.meta.env.DEV) {
+    console.error('Please check your Firebase configuration in .env file');
+  }
+  throw error;
+}
 
+export { db };
 export default app;
 

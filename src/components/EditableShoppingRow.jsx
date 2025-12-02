@@ -1,18 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { STORES, getStoreColor, AUTO_SAVE_DEBOUNCE_MS, CLICK_OUTSIDE_DELAY_MS } from '../utils/constants';
 import './EditableShoppingRow.css';
-
-const STORES = ['Fresh Farm', 'Aldi', 'Costco', "Binny's", 'Other'];
-
-const getStoreColor = (store) => {
-  const storeColors = {
-    'Fresh Farm': '#4caf50', // green
-    'Aldi': '#2196f3', // blue
-    'Costco': '#f44336', // red
-    "Binny's": '#212121', // black
-    'Other': '#9e9e9e' // gray
-  };
-  return storeColors[store] || storeColors['Other'];
-};
 
 const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -74,7 +62,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
     }
     saveTimeoutRef.current = setTimeout(async () => {
       await onSave(item.id, newEditData);
-    }, 500); // 500ms debounce
+    }, AUTO_SAVE_DEBOUNCE_MS);
   };
 
   const handleBlur = async () => {
@@ -112,7 +100,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
       // Use a small timeout to avoid canceling when clicking to focus an input
       const timeoutId = setTimeout(() => {
         document.addEventListener('mousedown', handleClickOutside);
-      }, 100);
+      }, CLICK_OUTSIDE_DELAY_MS);
 
       return () => {
         clearTimeout(timeoutId);
@@ -189,7 +177,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
         </div>
         <div className="col-actions">
           <button
-            className="delete-button"
+            className="cancel-button"
             onClick={handleDelete}
             aria-label="Delete item"
             title="Delete item"
@@ -239,7 +227,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
       </div>
       <div className="col-actions" onClick={(e) => e.stopPropagation()}>
         <button
-          className="delete-button"
+          className="cancel-button"
           onClick={handleDelete}
           aria-label="Delete item"
           title="Delete item"

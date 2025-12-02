@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { STORES } from '../utils/constants';
 import './InlineAddRow.css';
-
-const STORES = ['Fresh Farm', 'Aldi', 'Costco', "Binny's", 'Other'];
 
 const InlineAddRow = ({ onSave }) => {
   const [formData, setFormData] = useState({

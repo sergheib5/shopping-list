@@ -124,18 +124,25 @@
   align-items: center;
 }
 
-.delete-button {
-  background: #ff4444;
+.cancel-button {
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
+  padding: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  line-height: 1;
   transition: all 0.2s ease;
+  font-weight: 300;
 }
 
-.delete-button:hover {
-  background: #cc0000;
+.cancel-button:hover {
+  color: #c62828;
   transform: scale(1.1);
 }
 

@@ -15,15 +15,24 @@ const SHOPPING_LIST_COLLECTION = 'shoppingList';
 const MENU_COLLECTION = 'menu';
 
 // Shopping List Functions
-export const subscribeToShoppingList = (callback) => {
+export const subscribeToShoppingList = (callback, onError) => {
   const q = query(collection(db, SHOPPING_LIST_COLLECTION), orderBy('createdAt', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    const items = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(items);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const items = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(items);
+    },
+    (error) => {
+      console.error('Error subscribing to shopping list:', error);
+      if (onError) {
+        onError(error);
+      }
+    }
+  );
 };
 
 export const addShoppingItem = async (item) => {
@@ -48,15 +57,24 @@ export const toggleShoppingItem = async (id, checked) => {
 };
 
 // Menu Functions
-export const subscribeToMenu = (callback) => {
+export const subscribeToMenu = (callback, onError) => {
   const q = query(collection(db, MENU_COLLECTION), orderBy('createdAt', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    const items = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(items);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const items = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(items);
+    },
+    (error) => {
+      console.error('Error subscribing to menu:', error);
+      if (onError) {
+        onError(error);
+      }
+    }
+  );
 };
 
 export const addMenuItem = async (item) => {

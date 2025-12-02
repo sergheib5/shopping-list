@@ -3,8 +3,8 @@ const CACHE_NAME = 'new-year-shopping-list-v1';
 const urlsToCache = [
   '/',
   '/menu',
-  '/src/main.jsx',
-  '/src/App.jsx'
+  '/index.html',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
