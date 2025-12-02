@@ -4,10 +4,14 @@ import Menu from './pages/Menu';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
+// Get base path from environment variable for GitHub Pages
+// If deploying to GitHub Pages, set VITE_BASE_PATH to your repo name (e.g., '/shopping-list/')
+const basePath = import.meta.env.VITE_BASE_PATH || '/';
+
 function App() {
   return (
     <ErrorBoundary>
-      <Router>
+      <Router basename={basePath}>
         <Routes>
           <Route path="/" element={<ShoppingList />} />
           <Route path="/menu" element={<Menu />} />

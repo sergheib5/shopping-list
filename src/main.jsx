@@ -4,9 +4,12 @@ import './index.css'
 import App from './App.jsx'
 
 // Register service worker for PWA
+// Use base path from environment variable for GitHub Pages compatibility
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    const basePath = import.meta.env.VITE_BASE_PATH || '/';
+    const swPath = `${basePath}sw.js`.replace('//', '/'); // Handle double slashes
+    navigator.serviceWorker.register(swPath)
       .then((registration) => {
         console.log('SW registered: ', registration);
       })

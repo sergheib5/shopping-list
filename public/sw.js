@@ -1,11 +1,16 @@
 // Service Worker for PWA
 const CACHE_NAME = 'new-year-shopping-list-v1';
+
+// Get base path from the service worker's scope
+// For GitHub Pages, this will be something like '/shopping-list/'
+const basePath = self.location.pathname.replace('/sw.js', '') || '/';
+
 const urlsToCache = [
-  '/',
-  '/menu',
-  '/index.html',
-  '/manifest.json'
-];
+  basePath,
+  basePath + 'menu',
+  basePath + 'index.html',
+  basePath + 'manifest.json'
+].map(url => url.replace('//', '/')); // Remove double slashes
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
