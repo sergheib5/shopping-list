@@ -1,0 +1,88 @@
+.inline-add-row {
+  display: grid;
+  grid-template-columns: 2fr 180px 80px;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.col-item-wide {
+  min-width: 0;
+}
+
+.item-input {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.item-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.col-store-compact,
+.col-quantity-compact {
+  min-width: 0;
+}
+
+.inline-input,
+.inline-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.inline-input:focus,
+.inline-select:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+}
+
+.inline-select {
+  cursor: pointer;
+  padding: 10px 12px;
+}
+
+.quantity-input {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .inline-add-row {
+    grid-template-columns: 2fr 150px 70px;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .inline-input,
+  .inline-select {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inline-add-row {
+    grid-template-columns: 2fr 120px 60px;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .inline-input,
+  .inline-select {
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+}

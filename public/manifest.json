@@ -1,0 +1,19 @@
+{
+  "name": "New Year Shopping List 2026",
+  "short_name": "NY Shopping List",
+  "description": "Collaborative shopping list and menu planner for New Year 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

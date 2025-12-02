@@ -1,0 +1,254 @@
+import { useState, useRef, useEffect } from 'react';
+import './EditableShoppingRow.css';
+
+const STORES = ['Fresh Farm', 'Aldi', 'Costco', "Binny's", 'Other'];
+
+const getStoreColor = (store) => {
+  const storeColors = {
+    'Fresh Farm': '#4caf50', // green
+    'Aldi': '#2196f3', // blue
+    'Costco': '#f44336', // red
+    "Binny's": '#212121', // black
+    'Other': '#9e9e9e' // gray
+  };
+  return storeColors[store] || storeColors['Other'];
+};
+
+const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    name: item.name || '',
+    store: item.store || 'Fresh Farm',
+    quantity: item.quantity || '',
+    notes: item.notes || ''
+  });
+  const nameInputRef = useRef(null);
+  const rowRef = useRef(null);
+  const editDataRef = useRef(editData);
+  const saveTimeoutRef = useRef(null);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    editDataRef.current = editData;
+  }, [editData]);
+
+  useEffect(() => {
+    if (isEditing && nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    onToggle(item.id, e.target.checked);
+  };
+
+  const handleRowClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      setEditData({
+        name: item.name || '',
+        store: item.store || 'Fresh Farm',
+        quantity: item.quantity || '',
+        notes: item.notes || ''
+      });
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete(item.id);
+  };
+
+  const handleChange = (field, value) => {
+    const newEditData = {
+      ...editData,
+      [field]: value
+    };
+    setEditData(newEditData);
+    
+    // Auto-save with debounce
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(async () => {
+      await onSave(item.id, newEditData);
+    }, 500); // 500ms debounce
+  };
+
+  const handleBlur = async () => {
+    // Clear any pending save and save immediately
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    // Use ref to get latest state
+    await onSave(item.id, editDataRef.current);
+  };
+
+  const handleCancel = () => {
+    // Clear any pending saves
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    setEditData({
+      name: item.name || '',
+      store: item.store || 'Fresh Farm',
+      quantity: item.quantity || '',
+      notes: item.notes || ''
+    });
+    setIsEditing(false);
+  };
+
+  // Handle click outside to cancel editing
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isEditing && rowRef.current && !rowRef.current.contains(event.target)) {
+        handleCancel();
+      }
+    };
+
+    if (isEditing) {
+      // Use a small timeout to avoid canceling when clicking to focus an input
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isEditing]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      handleCancel();
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div 
+        ref={rowRef}
+        className="shopping-item-row editing" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="col-checkbox">
+          <input
+            type="checkbox"
+            checked={item.checked || false}
+            onChange={handleToggle}
+            className="item-checkbox"
+            disabled
+          />
+        </div>
+        <div className="col-item">
+          <input
+            ref={nameInputRef}
+            type="text"
+            value={editData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="inline-input"
+          />
+        </div>
+        <div className="col-store">
+          <select
+            value={editData.store}
+            onChange={(e) => handleChange('store', e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="inline-select"
+          >
+            {STORES.map(store => (
+              <option key={store} value={store}>{store}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-quantity">
+          <input
+            type="text"
+            value={editData.quantity}
+            onChange={(e) => handleChange('quantity', e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="inline-input"
+          />
+        </div>
+        <div className="col-notes">
+          <input
+            type="text"
+            value={editData.notes}
+            onChange={(e) => handleChange('notes', e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="inline-input"
+          />
+        </div>
+        <div className="col-actions">
+          <button
+            className="delete-button"
+            onClick={handleDelete}
+            aria-label="Delete item"
+            title="Delete item"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      ref={rowRef}
+      className={`shopping-item-row ${item.checked ? 'checked' : ''}`}
+      onClick={handleRowClick}
+    >
+      <div className="col-checkbox" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          checked={item.checked || false}
+          onChange={handleToggle}
+          className="item-checkbox"
+        />
+      </div>
+      <div className="col-item">
+        <span className={item.checked ? 'strikethrough' : ''}>
+          {item.name || 'Unnamed Item'}
+        </span>
+      </div>
+      <div className="col-store">
+        <span 
+          className="store-badge" 
+          style={{ 
+            background: getStoreColor(item.store || 'Other'),
+            color: 'white'
+          }}
+        >
+          {item.store || 'Other'}
+        </span>
+      </div>
+      <div className="col-quantity">
+        <span>{item.quantity || '-'}</span>
+      </div>
+      <div className="col-notes">
+        <span className="notes-text">{item.notes || ''}</span>
+      </div>
+      <div className="col-actions" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="delete-button"
+          onClick={handleDelete}
+          aria-label="Delete item"
+          title="Delete item"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default EditableShoppingRow;
