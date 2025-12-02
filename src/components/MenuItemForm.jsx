@@ -41,6 +41,12 @@ const MenuItemForm = ({ item, type, onSave, onCancel }) => {
 
     try {
       const dataToSave = { ...formData };
+      
+      // Ensure type is always set
+      if (!dataToSave.type) {
+        dataToSave.type = type || 'daily';
+      }
+      
       // Remove empty fields based on type
       if (dataToSave.type === 'daily') {
         delete dataToSave.name;
@@ -61,11 +67,17 @@ const MenuItemForm = ({ item, type, onSave, onCancel }) => {
         delete dataToSave.preparedBy;
       }
 
+      console.log('Saving menu item:', { dataToSave, itemId: item?.id });
       await onSave(dataToSave, item?.id);
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error saving menu item:', error);
-      alert('Failed to save item. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        itemData: formData
+      });
+      alert(`Failed to save item: ${error.message || 'Please try again.'}`);
       setIsSubmitting(false);
     }
   };

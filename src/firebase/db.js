@@ -60,18 +60,43 @@ export const subscribeToMenu = (callback) => {
 };
 
 export const addMenuItem = async (item) => {
-  return await addDoc(collection(db, MENU_COLLECTION), {
-    ...item,
-    createdAt: new Date()
-  });
+  try {
+    // Ensure type is always included
+    const menuItem = {
+      ...item,
+      type: item.type || 'daily',
+      createdAt: new Date()
+    };
+    console.log('Adding menu item to Firestore:', menuItem);
+    const docRef = await addDoc(collection(db, MENU_COLLECTION), menuItem);
+    console.log('Menu item added with ID:', docRef.id);
+    return docRef;
+  } catch (error) {
+    console.error('Error adding menu item:', error);
+    throw error;
+  }
 };
 
 export const updateMenuItem = async (id, updates) => {
-  const itemRef = doc(db, MENU_COLLECTION, id);
-  return await updateDoc(itemRef, updates);
+  try {
+    console.log('Updating menu item in Firestore:', { id, updates });
+    const itemRef = doc(db, MENU_COLLECTION, id);
+    await updateDoc(itemRef, updates);
+    console.log('Menu item updated successfully');
+  } catch (error) {
+    console.error('Error updating menu item:', error);
+    throw error;
+  }
 };
 
 export const deleteMenuItem = async (id) => {
-  return await deleteDoc(doc(db, MENU_COLLECTION, id));
+  try {
+    console.log('Deleting menu item from Firestore:', id);
+    await deleteDoc(doc(db, MENU_COLLECTION, id));
+    console.log('Menu item deleted successfully');
+  } catch (error) {
+    console.error('Error deleting menu item:', error);
+    throw error;
+  }
 };
 

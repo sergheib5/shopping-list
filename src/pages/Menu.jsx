@@ -26,17 +26,28 @@ const Menu = () => {
 
   const handleAddItem = async (itemData, itemId) => {
     try {
+      console.log('Menu handleAddItem:', { itemData, itemId });
+      
       if (itemId) {
+        console.log('Updating menu item:', itemId);
         await updateMenuItem(itemId, itemData);
       } else {
+        console.log('Adding new menu item');
         await addMenuItem(itemData);
       }
+      
       setShowForm(false);
       setEditingItem(null);
       setFormType('daily');
     } catch (error) {
       console.error('Error saving menu item:', error);
-      alert('Failed to save item. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        itemData,
+        itemId
+      });
+      alert(`Failed to save item: ${error.message || 'Please try again.'}`);
     }
   };
 
