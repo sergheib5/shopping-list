@@ -18,7 +18,53 @@
   background: transparent;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 16px;
+}
+
+.store-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-button {
+  padding: 8px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button.active {
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.filter-button:first-child.active {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+
+.empty-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
 }
 
 
@@ -45,6 +91,16 @@
 @media (max-width: 480px) {
   .col-notes {
     display: none;
+  }
+
+  .store-filter {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .filter-button {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 

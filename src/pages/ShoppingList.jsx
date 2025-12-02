@@ -10,10 +10,12 @@ import {
   toggleShoppingItem,
   deleteShoppingItem 
 } from '../firebase/db';
+import { STORES, getStoreColor } from '../utils/constants';
 import './ShoppingList.css';
 
 const ShoppingList = () => {
   const [items, setItems] = useState([]);
+  const [selectedStore, setSelectedStore] = useState('All');
 
   useEffect(() => {
     const unsubscribe = subscribeToShoppingList((items) => {
@@ -61,27 +63,63 @@ const ShoppingList = () => {
     }
   };
 
+  // Filter items based on selected store
+  const filteredItems = selectedStore === 'All' 
+    ? items 
+    : items.filter(item => item.store === selectedStore);
 
   return (
     <div className="shopping-list-page">
       <Header />
       <main className="main-content">
         <div className="shopping-list-container">
+          {/* Store filter */}
+          <div className="store-filter">
+            <button
+              className={`filter-button ${selectedStore === 'All' ? 'active' : ''}`}
+              onClick={() => setSelectedStore('All')}
+            >
+              All
+            </button>
+            {STORES.map(store => (
+              <button
+                key={store}
+                className={`filter-button ${selectedStore === store ? 'active' : ''}`}
+                onClick={() => setSelectedStore(store)}
+                style={{
+                  backgroundColor: selectedStore === store ? getStoreColor(store) : 'white',
+                  color: selectedStore === store ? 'white' : '#333',
+                  borderColor: getStoreColor(store)
+                }}
+              >
+                {store}
+              </button>
+            ))}
+          </div>
+          
           {/* Add form at the top */}
           <InlineAddRow
             onSave={handleAddItem}
           />
           <div className="shopping-list-table">
             <div className="table-body">
-              {items.map((item) => (
-                <EditableShoppingRow
-                  key={item.id}
-                  item={item}
-                  onToggle={handleToggleItem}
-                  onDelete={handleDeleteItem}
-                  onSave={handleUpdateItem}
-                />
-              ))}
+              {filteredItems.length === 0 ? (
+                <div className="empty-message">
+                  {selectedStore === 'All' 
+                    ? 'No items in your shopping list yet' 
+                    : `No items for ${selectedStore} yet`}
+                </div>
+              ) : (
+                filteredItems.map((item) => (
+                  <EditableShoppingRow
+                    key={item.id}
+                    item={item}
+                    onToggle={handleToggleItem}
+                    onDelete={handleDeleteItem}
+                    onSave={handleUpdateItem}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
