@@ -36,7 +36,7 @@ if ('serviceWorker' in navigator) {
           });
       }, 100);
     });
-  }
+  });
 }
 
 // Error boundary for rendering
