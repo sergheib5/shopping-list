@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import InlineAddRow from '../components/InlineAddRow';
@@ -11,11 +11,49 @@ import {
   deleteShoppingItem 
 } from '../firebase/db';
 import { STORES, getStoreColor } from '../utils/constants';
+import { triggerStoreConfetti, triggerCompleteConfetti } from '../utils/confetti';
 import './ShoppingList.css';
 
 const ShoppingList = () => {
   const [items, setItems] = useState([]);
   const [selectedStore, setSelectedStore] = useState('All');
+  const previousCompletedStoresRef = useRef(new Set());
+  const wasFullyCompleteRef = useRef(false);
+  const isInitialLoadRef = useRef(true);
+  const confettiCleanupRef = useRef(null);
+
+  // Helper function to calculate store completion status
+  const calculateStoreCompletion = (itemsList) => {
+    const storeItems = {};
+    const completedStores = new Set();
+
+    // Group items by store
+    itemsList.forEach(item => {
+      const store = item.store || 'Other';
+      if (!storeItems[store]) {
+        storeItems[store] = { total: 0, checked: 0 };
+      }
+      storeItems[store].total++;
+      if (item.checked) {
+        storeItems[store].checked++;
+      }
+    });
+
+    // Find stores that are 100% complete (have items and all are checked)
+    Object.keys(storeItems).forEach(store => {
+      const storeData = storeItems[store];
+      if (storeData.total > 0 && storeData.checked === storeData.total) {
+        completedStores.add(store);
+      }
+    });
+
+    // Check if entire list is complete
+    const totalItems = itemsList.length;
+    const checkedItems = itemsList.filter(item => item.checked).length;
+    const isFullyComplete = totalItems > 0 && checkedItems === totalItems;
+
+    return { completedStores, isFullyComplete };
+  };
 
   useEffect(() => {
     const unsubscribe = subscribeToShoppingList((items) => {
@@ -24,6 +62,57 @@ const ShoppingList = () => {
 
     return () => unsubscribe();
   }, []);
+
+  // Track store completion and trigger confetti
+  useEffect(() => {
+    // Skip confetti on initial load
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      // Set initial state without triggering confetti
+      const storeCompletion = calculateStoreCompletion(items);
+      previousCompletedStoresRef.current = new Set(storeCompletion.completedStores);
+      wasFullyCompleteRef.current = storeCompletion.isFullyComplete;
+      return;
+    }
+
+    // Cleanup any pending confetti animations before triggering new ones
+    if (confettiCleanupRef.current) {
+      confettiCleanupRef.current();
+      confettiCleanupRef.current = null;
+    }
+
+    const storeCompletion = calculateStoreCompletion(items);
+    const currentCompletedStores = new Set(storeCompletion.completedStores);
+    const previousCompletedStores = previousCompletedStoresRef.current;
+
+    // Check for newly completed stores
+    currentCompletedStores.forEach(store => {
+      if (!previousCompletedStores.has(store)) {
+        // Store just became complete - trigger confetti!
+        const storeColor = getStoreColor(store);
+        triggerStoreConfetti(store, storeColor);
+      }
+    });
+
+    // Check if entire list just became 100% complete
+    if (storeCompletion.isFullyComplete && !wasFullyCompleteRef.current) {
+      // Entire list just became complete - big celebration!
+      const cleanup = triggerCompleteConfetti();
+      confettiCleanupRef.current = cleanup;
+    }
+
+    // Update refs for next comparison
+    previousCompletedStoresRef.current = currentCompletedStores;
+    wasFullyCompleteRef.current = storeCompletion.isFullyComplete;
+
+    // Cleanup function to cancel pending animations when effect re-runs or component unmounts
+    return () => {
+      if (confettiCleanupRef.current) {
+        confettiCleanupRef.current();
+        confettiCleanupRef.current = null;
+      }
+    };
+  }, [items]);
 
   const handleAddItem = async (itemData) => {
     try {
