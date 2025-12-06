@@ -53,3 +53,4 @@ const ShoppingItemRow = ({ item, onToggle, onDelete, onEdit }) => {
 
 export default ShoppingItemRow;
 
+
