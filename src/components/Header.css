@@ -12,8 +12,8 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-wrap: nowrap;
+  gap: 8px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -29,15 +29,18 @@
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 8px 16px;
+  padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
 .export-button:hover:not(:disabled) {
@@ -57,17 +60,36 @@
 
 @media (max-width: 768px) {
   .app-header {
-    padding: 8px 16px;
+    padding: 6px 12px;
   }
 
   .header-content {
     justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .export-button {
+    padding: 5px 8px;
+    font-size: 16px;
+    min-width: 32px;
+    height: 32px;
   }
 }
 
 @media (max-width: 480px) {
+  .app-header {
+    padding: 4px 8px;
+  }
+
   .header-content {
-    gap: 8px;
+    gap: 4px;
+  }
+
+  .export-button {
+    padding: 4px 6px;
+    font-size: 14px;
+    min-width: 28px;
+    height: 28px;
   }
 }
 

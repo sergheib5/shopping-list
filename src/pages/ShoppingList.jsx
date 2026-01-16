@@ -4,6 +4,7 @@ import BottomNav from '../components/BottomNav';
 import InlineAddRow from '../components/InlineAddRow';
 import EditableShoppingRow from '../components/EditableShoppingRow';
 import SearchField from '../components/SearchField';
+import useSalads from '../hooks/useSalads';
 import { 
   subscribeToShoppingList, 
   addShoppingItem,
@@ -16,8 +17,10 @@ import { triggerStoreConfetti, triggerCompleteConfetti } from '../utils/confetti
 import './ShoppingList.css';
 
 const ShoppingList = () => {
+  const salads = useSalads();
   const [items, setItems] = useState([]);
   const [selectedStore, setSelectedStore] = useState('All');
+  const [selectedSalad, setSelectedSalad] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const previousCompletedStoresRef = useRef(new Set());
   const wasFullyCompleteRef = useRef(false);
@@ -154,17 +157,20 @@ const ShoppingList = () => {
     }
   };
 
-  // Filter items based on selected store and search query
+  // Filter items based on selected store, salad, and search query
   const filteredItems = items.filter(item => {
     // Store filter
     const matchesStore = selectedStore === 'All' || item.store === selectedStore;
+    
+    // Salad filter
+    const matchesSalad = selectedSalad === 'All' || (item.salad || 'General') === selectedSalad;
     
     // Search filter - defensively handle missing or undefined names
     const matchesSearch = searchQuery.trim() === '' || 
       (item.name && typeof item.name === 'string' && 
        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
     
-    return matchesStore && matchesSearch;
+    return matchesStore && matchesSalad && matchesSearch;
   });
 
   return (
@@ -195,6 +201,43 @@ const ShoppingList = () => {
               </button>
             ))}
           </div>
+
+          {/* Salad filter */}
+          {salads.length > 0 && (
+            <div className="salad-filter">
+              <button
+                className={`filter-button filter-button-salad ${selectedSalad === 'All' ? 'active' : ''}`}
+                onClick={() => setSelectedSalad('All')}
+              >
+                All Salads
+              </button>
+              <button
+                className={`filter-button filter-button-salad ${selectedSalad === 'General' ? 'active' : ''}`}
+                onClick={() => setSelectedSalad('General')}
+                style={{
+                  backgroundColor: selectedSalad === 'General' ? '#81c784' : 'white',
+                  color: selectedSalad === 'General' ? 'white' : '#333',
+                  borderColor: '#81c784'
+                }}
+              >
+                General
+              </button>
+              {salads.map(salad => (
+                <button
+                  key={salad}
+                  className={`filter-button filter-button-salad ${selectedSalad === salad ? 'active' : ''}`}
+                  onClick={() => setSelectedSalad(salad)}
+                  style={{
+                    backgroundColor: selectedSalad === salad ? '#81c784' : 'white',
+                    color: selectedSalad === salad ? 'white' : '#333',
+                    borderColor: '#81c784'
+                  }}
+                >
+                  {salad}
+                </button>
+              ))}
+            </div>
+          )}
           
           {/* Search field */}
           <SearchField
@@ -213,9 +256,13 @@ const ShoppingList = () => {
                 <div className="empty-message">
                   {searchQuery.trim() 
                     ? `No items found matching "${searchQuery}"`
-                    : selectedStore === 'All' 
+                    : selectedStore === 'All' && selectedSalad === 'All'
                       ? 'No items in your shopping list yet' 
-                      : `No items for ${selectedStore} yet`}
+                      : selectedStore !== 'All' && selectedSalad === 'All'
+                        ? `No items for ${selectedStore} yet`
+                        : selectedStore === 'All' && selectedSalad !== 'All'
+                          ? `No items for ${selectedSalad} yet`
+                          : `No items for ${selectedStore} - ${selectedSalad} yet`}
                 </div>
               ) : (
                 filteredItems.map((item) => (

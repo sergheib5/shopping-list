@@ -27,8 +27,9 @@ const Header = () => {
           onClick={handleExport}
           disabled={isExporting}
           title="Export all data to CSV"
+          aria-label="Export CSV"
         >
-          {isExporting ? 'Exporting...' : '📥 Export CSV'}
+          {isExporting ? '⏳' : '📥'}
         </button>
       </div>
     </header>

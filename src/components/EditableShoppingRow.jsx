@@ -240,16 +240,8 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
           {item.name || 'Unnamed Item'}
         </span>
       </div>
-      <div className="col-store">
-        <span 
-          className="store-badge" 
-          style={{ 
-            background: getStoreColor(item.store || 'Other'),
-            color: 'white'
-          }}
-        >
-          {item.store || 'Other'}
-        </span>
+      <div className="col-store col-store-hidden">
+        {/* Store badge hidden in display mode - filtering available at top */}
       </div>
       <div className="col-salad">
         <span className="salad-badge">

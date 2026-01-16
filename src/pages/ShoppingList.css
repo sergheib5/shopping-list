@@ -21,7 +21,8 @@
   gap: 16px;
 }
 
-.store-filter {
+.store-filter,
+.salad-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -60,6 +61,12 @@
   border-color: #333;
 }
 
+.salad-filter .filter-button:first-child.active {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+
 .empty-message {
   padding: 40px 20px;
   text-align: center;
@@ -93,7 +100,8 @@
     display: none;
   }
 
-  .store-filter {
+  .store-filter,
+  .salad-filter {
     padding: 8px;
     gap: 6px;
   }
