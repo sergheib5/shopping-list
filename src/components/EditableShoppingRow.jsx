@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { STORES, getStoreColor, AUTO_SAVE_DEBOUNCE_MS, CLICK_OUTSIDE_DELAY_MS } from '../utils/constants';
+import useSalads from '../hooks/useSalads';
 import './EditableShoppingRow.css';
 
 const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
+  const salads = useSalads();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: item.name || '',
     store: item.store || 'Fresh Farm',
+    salad: item.salad || 'General',
     quantity: item.quantity || '',
     notes: item.notes || ''
   });
@@ -19,6 +22,19 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
   useEffect(() => {
     editDataRef.current = editData;
   }, [editData]);
+
+  // Sync editData when item changes (when not editing)
+  useEffect(() => {
+    if (!isEditing) {
+      setEditData({
+        name: item.name || '',
+        store: item.store || 'Fresh Farm',
+        salad: item.salad || 'General',
+        quantity: item.quantity || '',
+        notes: item.notes || ''
+      });
+    }
+  }, [item, isEditing]);
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -38,6 +54,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
       setEditData({
         name: item.name || '',
         store: item.store || 'Fresh Farm',
+        salad: item.salad || 'General',
         quantity: item.quantity || '',
         notes: item.notes || ''
       });
@@ -82,6 +99,7 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
     setEditData({
       name: item.name || '',
       store: item.store || 'Fresh Farm',
+      salad: item.salad || 'General',
       quantity: item.quantity || '',
       notes: item.notes || ''
     });
@@ -155,6 +173,20 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
             ))}
           </select>
         </div>
+        <div className="col-salad">
+          <select
+            value={editData.salad}
+            onChange={(e) => handleChange('salad', e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="inline-select"
+          >
+            <option value="General">General</option>
+            {salads.map(salad => (
+              <option key={salad} value={salad}>{salad}</option>
+            ))}
+          </select>
+        </div>
         <div className="col-quantity">
           <input
             type="text"
@@ -217,6 +249,11 @@ const EditableShoppingRow = ({ item, onToggle, onDelete, onSave }) => {
           }}
         >
           {item.store || 'Other'}
+        </span>
+      </div>
+      <div className="col-salad">
+        <span className="salad-badge">
+          {item.salad || 'General'}
         </span>
       </div>
       <div className="col-quantity">

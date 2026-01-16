@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
+import useSalads from '../hooks/useSalads';
 import './ShoppingItemForm.css';
 
 const STORES = ['Fresh Farm', 'Aldi', 'Costco', "Binny's", 'Other'];
 
 const ShoppingItemForm = ({ item, onSave, onCancel }) => {
+  const salads = useSalads();
   const [formData, setFormData] = useState({
     name: '',
     store: 'Fresh Farm',
+    salad: 'General',
     quantity: '',
     notes: ''
   });
@@ -18,6 +21,7 @@ const ShoppingItemForm = ({ item, onSave, onCancel }) => {
       setFormData({
         name: item.name || '',
         store: item.store || 'Fresh Farm',
+        salad: item.salad || 'General',
         quantity: item.quantity || '',
         notes: item.notes || ''
       });
@@ -77,6 +81,22 @@ const ShoppingItemForm = ({ item, onSave, onCancel }) => {
             >
               {STORES.map(store => (
                 <option key={store} value={store}>{store}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="salad">Salad</label>
+            <select
+              id="salad"
+              name="salad"
+              value={formData.salad}
+              onChange={handleChange}
+              className="form-select"
+            >
+              <option value="General">General</option>
+              {salads.map(salad => (
+                <option key={salad} value={salad}>{salad}</option>
               ))}
             </select>
           </div>

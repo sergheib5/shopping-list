@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { STORES } from '../utils/constants';
+import useSalads from '../hooks/useSalads';
 import './InlineAddRow.css';
 
 const InlineAddRow = ({ onSave }) => {
+  const salads = useSalads();
   const [formData, setFormData] = useState({
     name: '',
     store: 'Fresh Farm',
+    salad: 'General',
     quantity: ''
   });
 
@@ -32,7 +35,7 @@ const InlineAddRow = ({ onSave }) => {
       }, 50);
       return () => clearTimeout(timeoutId);
     }
-  }, [formData.name, formData.quantity]);
+  }, [formData.name, formData.quantity, formData.salad]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -49,6 +52,7 @@ const InlineAddRow = ({ onSave }) => {
       setFormData({
         name: '',
         store: 'Fresh Farm',
+        salad: 'General',
         quantity: ''
       });
       // Focus back on name input immediately for continuous flow
@@ -78,6 +82,7 @@ const InlineAddRow = ({ onSave }) => {
         setFormData({
           name: '',
           store: 'Fresh Farm',
+          salad: 'General',
           quantity: ''
         });
         if (nameInputRef.current) {
@@ -96,7 +101,7 @@ const InlineAddRow = ({ onSave }) => {
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Item name..."
+          placeholder="Add item"
           className="inline-input item-input"
           required
         />
@@ -107,9 +112,24 @@ const InlineAddRow = ({ onSave }) => {
           onChange={(e) => handleChange('store', e.target.value)}
           className="inline-select"
           onKeyDown={handleKeyDown}
+          title={formData.store}
         >
           {STORES.map(store => (
             <option key={store} value={store}>{store}</option>
+          ))}
+        </select>
+      </div>
+      <div className="col-salad-compact">
+        <select
+          value={formData.salad}
+          onChange={(e) => handleChange('salad', e.target.value)}
+          className="inline-select"
+          onKeyDown={handleKeyDown}
+          title={formData.salad}
+        >
+          <option value="General">General</option>
+          {salads.map(salad => (
+            <option key={salad} value={salad}>{salad}</option>
           ))}
         </select>
       </div>

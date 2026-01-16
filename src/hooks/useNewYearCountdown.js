@@ -1,6 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export const useNewYearCountdown = () => {
+  // Calculate targetYear dynamically - updates when year changes
+  const getTargetYear = () => new Date().getFullYear() + 1;
+  const [targetYear, setTargetYear] = useState(getTargetYear());
+  const targetYearRef = useRef(targetYear);
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -11,7 +16,15 @@ export const useNewYearCountdown = () => {
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
-      const newYear = new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0, 0);
+      const currentTargetYear = getTargetYear();
+      
+      // Update targetYear if the year has changed (e.g., crossing year boundary)
+      if (currentTargetYear !== targetYearRef.current) {
+        targetYearRef.current = currentTargetYear;
+        setTargetYear(currentTargetYear);
+      }
+      
+      const newYear = new Date(currentTargetYear, 0, 1, 0, 0, 0, 0);
       const difference = newYear - now;
 
       if (difference > 0) {
@@ -30,9 +43,9 @@ export const useNewYearCountdown = () => {
     const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty deps - interval callback handles year changes
 
-  return timeLeft;
+  return { ...timeLeft, targetYear };
 };
 
 

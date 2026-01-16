@@ -6,7 +6,8 @@ import {
   doc, 
   onSnapshot,
   query,
-  orderBy 
+  orderBy,
+  getDocs
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -118,3 +119,31 @@ export const deleteMenuItem = async (id) => {
   }
 };
 
+// Export Functions - Get all data for CSV export
+export const getAllShoppingListItems = async () => {
+  try {
+    const q = query(collection(db, SHOPPING_LIST_COLLECTION), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error fetching shopping list items:', error);
+    throw error;
+  }
+};
+
+export const getAllMenuItems = async () => {
+  try {
+    const q = query(collection(db, MENU_COLLECTION), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error fetching menu items:', error);
+    throw error;
+  }
+};

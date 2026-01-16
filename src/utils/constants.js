@@ -19,4 +19,16 @@ export const AUTO_SAVE_DEBOUNCE_MS = 500;
 // Click outside handler delay in milliseconds
 export const CLICK_OUTSIDE_DELAY_MS = 100;
 
+// Get abbreviated store name for mobile display
+export const getStoreAbbreviation = (store) => {
+  const abbreviations = {
+    'Fresh Farm': 'FF',
+    'Aldi': 'Aldi',
+    'Costco': 'Costco',
+    "Binny's": "Binny's",
+    'Other': 'Other'
+  };
+  return abbreviations[store] || store;
+};
+
 

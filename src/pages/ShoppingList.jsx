@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import InlineAddRow from '../components/InlineAddRow';
 import EditableShoppingRow from '../components/EditableShoppingRow';
+import SearchField from '../components/SearchField';
 import { 
   subscribeToShoppingList, 
   addShoppingItem,
@@ -17,6 +18,7 @@ import './ShoppingList.css';
 const ShoppingList = () => {
   const [items, setItems] = useState([]);
   const [selectedStore, setSelectedStore] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const previousCompletedStoresRef = useRef(new Set());
   const wasFullyCompleteRef = useRef(false);
   const isInitialLoadRef = useRef(true);
@@ -152,10 +154,18 @@ const ShoppingList = () => {
     }
   };
 
-  // Filter items based on selected store
-  const filteredItems = selectedStore === 'All' 
-    ? items 
-    : items.filter(item => item.store === selectedStore);
+  // Filter items based on selected store and search query
+  const filteredItems = items.filter(item => {
+    // Store filter
+    const matchesStore = selectedStore === 'All' || item.store === selectedStore;
+    
+    // Search filter - defensively handle missing or undefined names
+    const matchesSearch = searchQuery.trim() === '' || 
+      (item.name && typeof item.name === 'string' && 
+       item.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
+    
+    return matchesStore && matchesSearch;
+  });
 
   return (
     <div className="shopping-list-page">
@@ -186,6 +196,13 @@ const ShoppingList = () => {
             ))}
           </div>
           
+          {/* Search field */}
+          <SearchField
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search items..."
+          />
+          
           {/* Add form at the top */}
           <InlineAddRow
             onSave={handleAddItem}
@@ -194,9 +211,11 @@ const ShoppingList = () => {
             <div className="table-body">
               {filteredItems.length === 0 ? (
                 <div className="empty-message">
-                  {selectedStore === 'All' 
-                    ? 'No items in your shopping list yet' 
-                    : `No items for ${selectedStore} yet`}
+                  {searchQuery.trim() 
+                    ? `No items found matching "${searchQuery}"`
+                    : selectedStore === 'All' 
+                      ? 'No items in your shopping list yet' 
+                      : `No items for ${selectedStore} yet`}
                 </div>
               ) : (
                 filteredItems.map((item) => (
